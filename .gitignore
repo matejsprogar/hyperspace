@@ -1,0 +1,7 @@
+*.[oa]
+*~
+*.project
+hyperspace.mk
+hyperspace.txt
+Debug/
+Release/
