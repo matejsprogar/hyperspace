@@ -31,13 +31,6 @@ using namespace hyper;
 
 typedef void (*voidfunc)();
 std::vector<voidfunc> all_tests = {
-    // debug neighbors' offsets 2-D test
-    []() {
-        unwrapped_space_offsets<5, 10, 7>::iterator it(0, 0, 0);
-        assert(make_offset<false>(it) == std::vector<int>({1, 7, 8, 70, 71, 77, 78}));
-        assert(it.type() == 13);
-        assert(it == 0);
-    },
     // null space neighbor offset test
     []() {
         assert(wrapped_space_offsets<0>::neighbors_offsets(0) == std::vector<int>({}));
@@ -48,22 +41,31 @@ std::vector<voidfunc> all_tests = {
         assert(wrapped_space_offsets<1>::neighbors_offsets(0) == std::vector<int>({}));
         assert(unwrapped_space_offsets<1>::neighbors_offsets(0) == std::vector<int>({}));
     },
-    // wrapped and unwrapped offsets 1-D test
+    // wrapped offsets 1-D test
     []() {
-        typedef unwrapped_space_offsets<5> us;
         typedef wrapped_space_offsets<5> ws;
 
         // left point ws.id(0)
-        assert(us::neighbors_offsets(1) == std::vector<int>({1}));
         assert(ws::neighbors_offsets(1) == std::vector<int>({1, 4}));
 
         // in-between points
-        assert(us::neighbors_offsets(0) == std::vector<int>({-1, 1}));
         assert(ws::neighbors_offsets(0) == std::vector<int>({-1, 1}));
 
         // right point ws.id(4)
-        assert(us::neighbors_offsets(2) == std::vector<int>({-1}));
         assert(ws::neighbors_offsets(2) == std::vector<int>({-4, -1}));
+    },
+    // unwrapped offsets 1-D test
+    []() {
+        typedef unwrapped_space_offsets<5> us;
+
+        // left point ws.id(0)
+        assert(us::neighbors_offsets(1) == std::vector<int>({1}));
+
+        // in-between points
+        assert(us::neighbors_offsets(0) == std::vector<int>({-1, 1}));
+
+        // right point ws.id(4)
+        assert(us::neighbors_offsets(2) == std::vector<int>({-1}));
     },
     // iterator default construction test
     []() {
@@ -106,6 +108,13 @@ std::vector<voidfunc> all_tests = {
         assert(2 == it[1]);
         assert(0 == it[2]);
         assert(4 == it);
+    },
+    // debug neighbors' offsets 2-D test
+    []() {
+        unwrapped_space_offsets<5, 10, 7>::iterator it(0, 0, 0);
+        assert(make_offset<false>(it) == std::vector<int>({1, 7, 8, 70, 71, 77, 78}));
+        assert(it.type() == 13);
+        assert(it == 0);
     },
     // neighbors' offsets with neighbors_offsets link 1-D test
     []() {
