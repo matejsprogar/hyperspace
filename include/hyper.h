@@ -340,7 +340,6 @@ class any_space
         inline bool operator!=(const offset_iterator& other) { return _loc != other._loc; }
         inline typename std::vector<T>::reference operator[](int offset) { return _data[_loc + offset]; }
     };
-    typedef offset_iterator neighborhood_iterator;
     
     struct const_offset_iterator {
         const std::vector<T>& _data;
@@ -386,9 +385,9 @@ class any_space
     inline const_offset_iterator end() const { return const_offset_iterator(data, space::end()); }
 
     template <typename... CC>
-    inline neighborhood_iterator at(CC... cc)
+    inline offset_iterator at(CC... cc)
     {
-        return neighborhood_iterator(data, location_iterator<XX...>(cc...));
+        return offset_iterator(data, location_iterator<XX...>(cc...));
     }
     inline static const std::vector<int>& neighbors_offsets(const location_iterator<XX...>& it)
     {
