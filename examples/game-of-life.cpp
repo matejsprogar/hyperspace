@@ -87,7 +87,7 @@ void game_of_life_2D()
                 count += it[off];
 
             // conway's rule
-            grid[it] = count == 3 or (old_grid[it] and count == 2);
+            grid[it] = count == 3 or (*it and count == 2);
         }
     }
 }
