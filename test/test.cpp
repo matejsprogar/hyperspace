@@ -610,17 +610,17 @@ std::vector<voidfunc> all_tests = {
     []() {
         // hyper::unwrapped_space<int, 5> spc{0};
         // auto cell = spc.at(2);
-        // 
-        // for(auto& x : cell)
-        //     x = 42;  // compile error: assignment of read-only reference 'x'
+        
+        // for(auto& x : cell.neighbors())
+        //     x = 42;  // compile error
     },
     // ISSUE #2: vector<reference_wrapper<bool>> problem with range-for syntax
     []() {
-        // hyper::unwrapped_space<bool, 5> spc{false};
-        // auto cell = spc.at(2);
+         // hyper::unwrapped_space<bool, 5> spc{false};
+         // auto cell = spc.at(2);
 
-        // for(bool& x : cell)
-        //  x = 42;
+         // for(bool& x : cell.neighbors())    // compile error
+         //    x = true;
     }
 };  // namespace sprogar
 

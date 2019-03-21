@@ -23,10 +23,10 @@
 
 #include <cassert>
 #include <cmath>
+#include <functional>
 #include <map>
 #include <set>
 #include <vector>
-#include <functional>
 
 namespace sprogar
 {
@@ -304,6 +304,8 @@ inline const std::vector<int>& unwrapped_neighbors_offsets(const location_iterat
     return unwrapped_space_offsets<XX...>::neighbors_offsets(it.type());
 }
 
+
+
 template <typename T, bool wrap, unsigned... XX>
 class any_space
 {
@@ -312,40 +314,42 @@ class any_space
     std::vector<T> data;  // std::array<> is not moveable
 
    public:
-    struct offset_iterator {
+    struct iterator {
         std::vector<T>& _data;
         location_iterator<XX...> _loc;
 
-        offset_iterator(std::vector<T>& d, const location_iterator<XX...>& loc) : _data(d), _loc(loc) {}
+        iterator(std::vector<T>& d, const location_iterator<XX...>& loc) : _data(d), _loc(loc) {}
 
         inline operator unsigned() const { return (unsigned)_loc; }
         inline typename std::vector<T>::reference operator*() { return _data[_loc]; }
 
-        inline std::vector<int>::const_iterator begin() { return space::neighbors_offsets(_loc.type()).begin(); }
-        inline std::vector<int>::const_iterator end() { return space::neighbors_offsets(_loc.type()).end(); }
+        inline std::vector<int>::const_iterator begin() const { return space::neighbors_offsets(_loc.type()).begin(); }
+        inline std::vector<int>::const_iterator end() const { return space::neighbors_offsets(_loc.type()).end(); }
 
         inline const std::vector<int>& neighbors_offsets() const { return space::neighbors_offsets(_loc.type()); }
-        inline std::vector<std::reference_wrapper<T>> neighbors() const { 
+        inline std::vector<std::reference_wrapper<T>> neighbors() const
+        {
             std::vector<std::reference_wrapper<T>> ans;
-            for (int off : space::neighbors_offsets(_loc.type()))
+            for(int off : space::neighbors_offsets(_loc.type()))
                 ans.push_back(std::ref(_data[_loc + off]));
-            return ans; 
+            return ans;
         }
 
-        inline offset_iterator& operator++()
+        inline iterator& operator++()
         {
             ++_loc;
             return *this;
         }
-        inline bool operator!=(const offset_iterator& other) { return _loc != other._loc; }
+        inline bool operator!=(const iterator& other) { return _loc != other._loc; }
         inline typename std::vector<T>::reference operator[](int offset) { return _data[_loc + offset]; }
+        inline unsigned operator[](unsigned dimension) const { return _loc[dimension]; }
     };
-    
-    struct const_offset_iterator {
+
+    struct const_iterator {
         const std::vector<T>& _data;
         location_iterator<XX...> _loc;
 
-        const_offset_iterator(const std::vector<T>& d, const location_iterator<XX...>& loc) : _data(d), _loc(loc) {}
+        const_iterator(const std::vector<T>& d, const location_iterator<XX...>& loc) : _data(d), _loc(loc) {}
 
         inline operator unsigned() const { return (unsigned)_loc; }
         inline typename std::vector<T>::const_reference operator*() const { return _data[_loc]; }
@@ -355,13 +359,14 @@ class any_space
 
         inline const std::vector<int>& neighbors_offsets() const { return space::neighbors_offsets(_loc.type()); }
 
-        inline const_offset_iterator& operator++()
+        inline const_iterator& operator++()
         {
             ++_loc;
             return *this;
         }
-        inline bool operator!=(const const_offset_iterator& other) { return _loc != other._loc; }
-        inline const T& operator[](int offset) const { return _data[_loc + offset]; }
+        inline bool operator!=(const const_iterator& other) { return _loc != other._loc; }
+        inline typename std::vector<T>::const_reference operator[](int offset) const { return _data[_loc + offset]; }
+        inline unsigned operator[](unsigned dimension) const { return _loc[dimension]; }
     };
 
    public:
@@ -378,16 +383,23 @@ class any_space
     inline typename std::vector<T>::const_reference operator[](unsigned pos) const { return data[pos]; }
 
     inline size_t size() const { return data.size(); }
+    inline static size_t dimension() { return sizeof...(XX); }
 
-    inline offset_iterator begin() { return offset_iterator(data, space::begin()); }
-    inline offset_iterator end() { return offset_iterator(data, space::end()); }
-    inline const_offset_iterator begin() const { return const_offset_iterator(data, space::begin()); }
-    inline const_offset_iterator end() const { return const_offset_iterator(data, space::end()); }
-
+    inline iterator begin() { return iterator(data, space::begin()); }
+    inline iterator end() { return iterator(data, space::end()); }
+    inline const_iterator begin() const { return const_iterator(data, space::begin()); }
+    inline const_iterator end() const { return const_iterator(data, space::end()); }
+    
+    
     template <typename... CC>
-    inline offset_iterator at(CC... cc)
+    inline iterator at(CC... cc)
     {
-        return offset_iterator(data, location_iterator<XX...>(cc...));
+        return iterator(data, location_iterator<XX...>(cc...));
+    }
+    template <typename... CC>
+    inline const_iterator at(CC... cc) const
+    {
+        return const_iterator(data, location_iterator<XX...>(cc...));
     }
     inline static const std::vector<int>& neighbors_offsets(const location_iterator<XX...>& it)
     {
@@ -399,7 +411,12 @@ class any_space
     {
         return data[typename space::iterator(cc...)];
     }
-
+    template <typename... CC>
+    inline typename std::vector<T>::const_reference operator()(CC... cc) const
+    {
+        return data[typename space::iterator(cc...)];
+    }
+    
     friend void swap(any_space& lhs, any_space& rhs) noexcept { lhs.data.swap(rhs.data); }
 };
 
