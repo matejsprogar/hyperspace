@@ -325,6 +325,7 @@ class any_space
 
         inline std::vector<int>::const_iterator begin() const { return space::neighbors_offsets(_loc.type()).begin(); }
         inline std::vector<int>::const_iterator end() const { return space::neighbors_offsets(_loc.type()).end(); }
+        inline unsigned size() const { return space::neighbors_offsets(_loc.type()).size(); }
 
         inline const std::vector<int>& neighbors_offsets() const { return space::neighbors_offsets(_loc.type()); }
         inline std::vector<std::reference_wrapper<T>> neighbors() const
@@ -356,6 +357,7 @@ class any_space
 
         inline std::vector<int>::const_iterator begin() const { return space::neighbors_offsets(_loc.type()).begin(); }
         inline std::vector<int>::const_iterator end() const { return space::neighbors_offsets(_loc.type()).end(); }
+        inline unsigned size() const { return space::neighbors_offsets(_loc.type()).size(); }
 
         inline const std::vector<int>& neighbors_offsets() const { return space::neighbors_offsets(_loc.type()); }
 
