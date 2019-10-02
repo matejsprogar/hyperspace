@@ -326,6 +326,7 @@ class grid
 
         inline std::vector<int>::const_iterator begin() const { return space_offsets::neighbors_offsets(_loc.type()).begin(); }
         inline std::vector<int>::const_iterator end() const { return space_offsets::neighbors_offsets(_loc.type()).end(); }
+        inline size_t size() const { return space_offsets::neighbors_offsets(_loc.type()).size(); }
         inline unsigned type() const { return _loc.type(); }
 
         inline const std::vector<int>& neighbors_offsets() const { return space_offsets::neighbors_offsets(_loc.type()); }
@@ -359,6 +360,7 @@ class grid
 
         inline std::vector<int>::const_iterator begin() const { return space_offsets::neighbors_offsets(_loc.type()).begin(); }
         inline std::vector<int>::const_iterator end() const { return space_offsets::neighbors_offsets(_loc.type()).end(); }
+        inline size_t size() const { return space_offsets::neighbors_offsets(_loc.type()).size(); }
         inline unsigned type() const { return _loc.type(); }
 
         inline const std::vector<int>& neighbors_offsets() const { return space_offsets::neighbors_offsets(_loc.type()); }
