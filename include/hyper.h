@@ -345,7 +345,7 @@ class grid
         }
         inline bool operator!=(const iterator& other) { return _loc != other._loc; }
         inline typename std::vector<T>::reference operator[](int offset) { return _data[_loc + offset]; }
-        inline unsigned operator[](unsigned dimension) const { return _loc[dimension]; }
+        inline unsigned coordinate(unsigned c) const { return _loc[c]; }
     };
 
     struct const_iterator {
@@ -372,7 +372,7 @@ class grid
         }
         inline bool operator!=(const const_iterator& other) { return _loc != other._loc; }
         inline typename std::vector<T>::const_reference operator[](int offset) const { return _data[_loc + offset]; }
-        inline unsigned operator[](unsigned dimension) const { return _loc[dimension]; }
+        inline unsigned coordinate(unsigned c) const { return _loc[c]; }
     };
 
    public:

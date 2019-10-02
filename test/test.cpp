@@ -309,20 +309,40 @@ namespace test {
             assert(it.type() == 21);
             assert(it == 65);
         },
-        // neighborhood size via iterator
+        // iterator API: neighborhood size
         []() {
             unwrapped_space<bool, 3, 3> u2d;
 
             auto it = u2d.begin();
-            assert(it.size() == 3);     // corner
+            assert(it.size() == 3); // corner
             ++it;
-            assert(it.size() == 5);     // edge
+            assert(it.size() == 5); // edge
             ++it;
-            assert(it.size() == 3);     // corner
+            assert(it.size() == 3); // corner
             ++it;
-            assert(it.size() == 5);     // edge
+            assert(it.size() == 5); // edge
             ++it;
-            assert(it.size() == 8);     // center
+            assert(it.size() == 8); // center
+        },
+        // iterator API: element coordinate
+        []() {
+            unwrapped_space<bool, 3, 3> u2d;
+
+            auto it = u2d.begin();
+            assert(it.coordinate(0) == 0); // corner x
+            assert(it.coordinate(1) == 0); // corner y
+            ++it;
+            assert(it.coordinate(0) == 1); // edge x 
+            assert(it.coordinate(1) == 0); // edge y
+            ++it;
+            assert(it.coordinate(0) == 2); // corner x
+            assert(it.coordinate(1) == 0); // corner y
+            ++it;
+            assert(it.coordinate(0) == 0); // edge x
+            assert(it.coordinate(1) == 1); // edge y
+            ++it;
+            assert(it.coordinate(0) == 1); // center x
+            assert(it.coordinate(1) == 1); // center y
         },
         // space description
         []() {
