@@ -389,7 +389,7 @@ class grid
     inline typename std::vector<T>::const_reference operator[](unsigned pos) const { return data[pos]; }
 
     inline size_t size() const { return data.size(); }
-    inline static size_t dimension() { return sizeof...(XX); }
+    inline static constexpr size_t dimension() { return sizeof...(XX); }
 
     inline iterator begin() { return iterator(data, space_offsets::begin()); }
     inline iterator end() { return iterator(data, space_offsets::end()); }
