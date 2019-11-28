@@ -669,50 +669,17 @@ namespace test {
             const wrapped_space<std::pair<int, int>, 2, 2> spc;
             wrapped_space<std::pair<int, int>, 2, 2>::const_iterator it = spc.begin();
             assert(*it == std::make_pair(0, 0));
-        }, /*
-         []() {
-             typedef wrapped_space<int, 4, 5, 6> Space;
-
-             const Space spc;
-
-             assert(spc.size() == 64);
-             auto& x = spc(1, 1, 0);
-             assert(x.subspace<0, 0, 0>().size() == 1);
-             assert(x.subspace<0, 0, 1>().size() == 6);
-             assert(x.subspace<1, 0, 0>().size() == 4);
-             assert(x.subspace<1, 0, 1>().size() == 24);
-             assert(x.subspace<1, 1, 1>().size() == 120);
-         },
-         []() {
-             typedef wrapped_space<int, 4, 4> Space;
-
-             auto it = Space::iterator(0, 0);
-             assert(it.id() == 0);
-             assert(it[0] == 0);
-             assert(it[1] == 0);
-             assert(hyper::make_offset<false>(it) == std::vector<int>{ 1, 3, 4, 5 });
-             assert(hyper::make_offset<true>(it) == std::vector<int>{ 1, 3, 4, 5, 12, 14, 15 });
-         },
-
-         []() {
-             typedef wrapped_space<int, 4, 4> Space;
-
-             auto it = Space::iterator(0, 0);
-             wrapped_space<int, 4> sub = it.subspace<>();
-             assert(hyper::make_offset<false>(it) == std::vector<int>{ 1, 3, 4, 5 });
-             assert(hyper::make_offset<true>(it) == std::vector<int>{ 1, 3, 4, 5, 12, 14, 15 });
-         }*/
-
-        // ISSUE #1: failure to auto-deduce the type stored in the neighboring cells
+        },
         []() {
+            std::clog << "ISSUE #1: failure to auto-deduce the type stored in the neighboring cells\n";
             // hyper::unwrapped_space<int, 5> spc{0};
             // auto cell = spc.at(2);
 
             // for(auto& x : cell.neighbors())
             //     x = 42;  // compile error
         },
-        // ISSUE #2: vector<reference_wrapper<bool>> problem with range-for syntax
         []() {
+            std::clog << "ISSUE #2: vector<reference_wrapper<bool>> problem with range-for syntax\n";
             // hyper::unwrapped_space<bool, 5> spc{false};
             // auto cell = spc.at(2);
 
