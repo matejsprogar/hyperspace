@@ -109,6 +109,7 @@ In order to run the accompanying tests and examples, a simplistic main file is p
 <h2>To-Do List</h2>
 <ol>
     <li>Other types of neighborhoods (beside <a href="https://en.wikipedia.org/wiki/Moore_neighborhood">Moore's</a>)
+    <li>duplicate code of grid::const_iterator and grid::iterator put in single any_iterator<bool> class</li>
     <li>API improvements</li>
     <li>Documentation</li>
 </ol>
