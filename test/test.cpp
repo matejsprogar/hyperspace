@@ -671,7 +671,7 @@ namespace test {
             assert(*it == std::make_pair(0, 0));
         },
         []() {
-            std::clog << "ISSUE #1: failure to auto-deduce the type stored in the neighboring cells";
+            std::clog << "ISSUE #1: failure to auto-deduce the type stored in the neighboring cells\n";
             // hyper::unwrapped_space<int, 5> spc{0};
             // auto cell = spc.at(2);
 
@@ -679,7 +679,7 @@ namespace test {
             //     x = 42;  // compile error
         },
         []() {
-            std::clog << "ISSUE #2: vector<reference_wrapper<bool>> problem with range-for syntax";
+            std::clog << "ISSUE #2: vector<reference_wrapper<bool>> problem with range-for syntax\n";
             // hyper::unwrapped_space<bool, 5> spc{false};
             // auto cell = spc.at(2);
 
