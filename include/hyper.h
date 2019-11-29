@@ -282,7 +282,7 @@ namespace hyper {
     }
 
     template <bool wrap, unsigned... XX>
-    class iterable_offsets  : public iterable_space<wrap, XX...> {
+    class iterable_offsets : public iterable_space<wrap, XX...> {
         static const std::vector<std::vector<int>> all_offsets;
 
     public:
@@ -442,11 +442,13 @@ namespace hyper {
         template <typename... CC>
         inline iterator at(CC... cc)
         {
+            static_assert(sizeof...(CC) == sizeof...(XX));
             return iterator(data, location_iterator<XX...>(cc...));
         }
         template <typename... CC>
         inline const_iterator at(CC... cc) const
         {
+            static_assert(sizeof...(CC) == sizeof...(XX));
             return const_iterator(data, location_iterator<XX...>(cc...));
         }
         inline static const std::vector<int>& neighbors_offsets(const location_iterator<XX...>& it)
@@ -462,14 +464,14 @@ namespace hyper {
         inline typename std::vector<T>::reference operator()(CC... cc)
         {
             static_assert(sizeof...(CC) == sizeof...(XX));
-            //return data[typename space_offsets::iterator(cc...)];
+            // return data[typename space_offsets::iterator(cc...)];
             return data[(size_t)location_iterator<XX...>(cc...)];
         }
         template <typename... CC>
         inline typename std::vector<T>::const_reference operator()(CC... cc) const
         {
             static_assert(sizeof...(CC) == sizeof...(XX));
-            //return data[typename space_offsets::iterator(cc...)];
+            // return data[typename space_offsets::iterator(cc...)];
             return data[(size_t)location_iterator<XX...>(cc...)];
         }
 
