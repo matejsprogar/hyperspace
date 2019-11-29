@@ -78,7 +78,6 @@ namespace examples {
             // std::cout << grid << std::endl; // uncomment this line to display the moving glider
         } while(initial != grid);
 
-        assert(initial == grid);
         assert(iterations == 40);
     }
 
@@ -102,7 +101,6 @@ namespace examples {
             iterations += 1;
         } while(initial != grid);
 
-        assert(initial == grid);
         assert(iterations == 40);
     }
 
