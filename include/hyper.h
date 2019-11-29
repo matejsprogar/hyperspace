@@ -461,12 +461,14 @@ namespace hyper {
         template <typename... CC>
         inline typename std::vector<T>::reference operator()(CC... cc)
         {
+            static_assert(sizeof...(CC) == sizeof...(XX));
             //return data[typename space_offsets::iterator(cc...)];
             return data[(size_t)location_iterator<XX...>(cc...)];
         }
         template <typename... CC>
         inline typename std::vector<T>::const_reference operator()(CC... cc) const
         {
+            static_assert(sizeof...(CC) == sizeof...(XX));
             //return data[typename space_offsets::iterator(cc...)];
             return data[(size_t)location_iterator<XX...>(cc...)];
         }
