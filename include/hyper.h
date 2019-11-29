@@ -476,9 +476,6 @@ namespace hyper {
         }
 
         friend void swap(grid& lhs, grid& rhs) noexcept { lhs.data.swap(rhs.data); }
-
-        inline bool operator!=(const grid& oth) const { return !(*this == oth); }
-        inline bool operator==(const grid& oth) const { return data == oth.data; }
     };
 
     template <typename T, unsigned... XX>
