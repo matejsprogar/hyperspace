@@ -94,8 +94,8 @@
 <h3>Game Of Life test/demonstration</h3>
 
 <p>The standard 2D Game Of Life is probably the most famous cellular automaton. A typical program (in any language) is not simple to comprehend and the <a href="http://rosettacode.org/wiki/Conway%27s_Game_of_Life">Rosetta</a> C++ solutions are incomprehensible. The code based on the Hyperspace library presented here, however, is short, intuitive and easy to read.
-<p>Porting any 2D implementation to higher dimensions (3D, 4D...) is traditionally difficult and prone to errors. The hyperspace-enabled game-of-life example, on the contrary, is <i>extremely</i> easy to extend to 3D simply by <i>adding the 3rd dimension</i> to the definition of the grid object!
-<p>This is shown by the second example (<i>game_of_life_3D()</i>), where the actual state-transition code used in 2D is reused for 3D without any modifications; only a different CA rule needs to be supplied. Any higher dimension CA can be established the same easy way.
+<p>Porting any 2D implementation to higher dimensions (3D, 4D...) is traditionally difficult and prone to errors. The hyperspace-enabled game-of-life code, on the contrary, is <i>extremely</i> easy to extend to 3D simply by <i>adding the 3rd dimension</i> to the definition of the grid object!
+<p>This is shown by the second function, (<i>game_of_life_3D()</i>), which uses <b>the same</b> state-transition code as the 2D function but with a different CA rule. Any higher dimension CA can be established the same easy way.
 <p>Both demos are also used as tests because a glider travelling over the wrapped space reaches the starting position in a known number of iterations. To see the 2D moving glider in action please uncomment the provided output command.
 
 
