@@ -88,23 +88,23 @@ Please see the accompanying tests and examples for how exactly to use them.
 
 
 <h2>Tests</h2>
-The project includes plenty of self-evident tests, which document all basic capabilities of provided classes. All tests are written as simplest functions in an initializer list to a <i>std::vector&ltvoid (*pf)()&gt;</i>, allowing for simple execution, easy expansion and maintenance/refactoring.
+The project includes plenty of self-evident tests, which document all basic capabilities of provided classes. Tests are written as lambda functions in an initializer list to a <i>std::vector&ltvoid (*pf)()&gt;</i>, allowing for simplest compilation without any testing frameworks, fast execution, easy expansion and great maintenance/refactoring possibilities.
 <p>
 The <i>test.cpp</i> file is included in a separate subfolder with all the tests packaged within the <i>sprogar::test</i> namespace.
 
 
-
-<h2>Examples</h2>
-The first example is the standard 2D Game Of Life, the most popular cellular automaton display. A typical program (in <a href="http://rosettacode.org/wiki/Conway%27s_Game_of_Life">any</a> language) is not simple to comprehend and the Rosetta C++ solution is just awful. The code based on the Hyperspace library presented here, however, is short, intuitive and easy to read.
+<h3>Game Of Life demonstration</h3>
+The standard 2D Game Of Life is probably the most famous cellular automaton. A typical program (in <a href="http://rosettacode.org/wiki/Conway%27s_Game_of_Life">any</a> language) is not simple to comprehend and the Rosetta C++ solution is just ugly. The code based on the Hyperspace library presented here, however, is short, intuitive and easy to read.
 <p>
-Next, porting any 2D implementation to higher dimensions (3D, 4D...) is traditionally difficult and prone to errors. The hyperspace-enabled game-of-life example, on the contrary, is <i>extremely</i> easy to extend to 3D simply by
-<i>adding the 3rd dimension</i> to the definition of the grid object!
+Porting any 2D implementation to higher dimensions (3D, 4D...) is traditionally difficult and prone to errors. The hyperspace-enabled game-of-life example, on the contrary, is <i>extremely</i> easy to extend to 3D simply by <i>adding the 3rd dimension</i> to the definition of the grid object!
 <p>
-This is shown in the second example (<i>game_of_life_3D()</i>), where most of the program code from the 2D example remains intact. In fact, the core CA handling code remains completely unaltered! Any higher dimension can be achieved the same way.
+This is shown by the second example (<i>game_of_life_3D()</i>), where the actual state-transition code used in 2D is reused for 3D without any modifications; only a different CA rule needs to be supplied. Any higher dimension CA can be established the same easy way.
+<p>
+Both demonstrations also test the library as gliders travel in the wrapped space to reach the starting position in a known number of iterations. For visual inspection of the 2D demo, the convenient output is provided but needs to be un-documented.
 
 
-<h2>Test and demonstration</h2>
-In order to run the accompanying tests and examples, a simplistic main file is provided. Please follow the compiling instructions there-in.
+<p>
+In order to run the tests, a simplistic main file is provided. Please follow the compiling instructions there-in.
 
 <h2>To-Do List</h2>
 <ol>

@@ -26,19 +26,34 @@
 namespace sprogar {
 namespace examples {
 
-    template <class Grid, class Func>
-    void game_of_life_iteration(Grid& g1, Grid& g2, Func fun)
+    // custom 2D grid output
+    template <typename T, bool W, unsigned D1, unsigned D0>
+    std::ostream& operator << (std::ostream& os, const hyper::grid<T, W, D1, D0>& spc)
     {
-        std::swap(g1, g2);
+        int d0 = 1;
+        for(auto b : spc) {
+            os << (b ? " X" : " ·");
+            if(d0++ % D0 == 0)
+                os << '\n';
+        }
+        return os;
+    }
+    
+    // central state-transition logic, usable for grids of all dimensions
+    template <class AnyGrid>
+    void game_of_life_iteration(AnyGrid& g, AnyGrid& old, bool (*rule)(int, bool))
+    {
+        std::swap(g, old);
 
-        for(auto it = g2.begin(); it != g2.end(); ++it) {
-            int count = 0;
-            // count the living neighbors
+        // for each cell in the grid
+        for(auto it = old.begin(); it != old.end(); ++it) {
+            int living_neighbors = 0;
             for(auto off : it)
-                count += it[off];
+                living_neighbors += it[off]; // bool -> 0 | 1
 
-            // conway's rule
-            g1[it] = fun(count, *it);
+            // exercise the CA rule to determine the new state
+            bool is_alive = it[0]; // or *it
+            g[it] = rule(living_neighbors, is_alive);
         }
     }
 
@@ -57,9 +72,10 @@ namespace examples {
         do {
             game_of_life_iteration(grid, old_grid,
                 // Conway's rule
-                [](int count, bool alive) -> bool { return count == 3 or (alive and count == 2); }
-            );
+                [](int count, bool alive) -> bool { return count == 3 or (alive and count == 2); });
             iterations += 1;
+            
+            //std::cout << grid << std::endl;
         } while(initial != grid);
 
         assert(initial == grid);
@@ -80,11 +96,9 @@ namespace examples {
         assert(initial == grid);
         int iterations = 0;
         do {
-            game_of_life_iteration(
-                grid, old_grid, 
-                // 3D gliding rule
-                [](int count, bool alive) -> bool { return count >= 5 and count <= 7; }
-            );
+            game_of_life_iteration(grid, old_grid,
+                // rule to move the above 3D gliders
+                [](int count, bool alive) -> bool { return count >= 5 and count <= 7; });
             iterations += 1;
         } while(initial != grid);
 
