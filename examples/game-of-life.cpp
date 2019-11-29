@@ -75,7 +75,7 @@ namespace examples {
                 [](int count, bool alive) -> bool { return count == 3 or (alive and count == 2); });
             iterations += 1;
             
-            //std::cout << grid << std::endl;
+            // std::cout << grid << std::endl; // uncomment this line to display the moving glider
         } while(initial != grid);
 
         assert(initial == grid);
