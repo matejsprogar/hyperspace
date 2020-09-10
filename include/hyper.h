@@ -67,6 +67,11 @@ namespace hyper {
             pos1d += 1;
             return true;
         }
+        inline bool prefix_dec()
+        {
+            pos1d -= 1;
+            return true;
+        }
         inline unsigned operator[](unsigned) const { return -1; }
 
         static inline location_iterator begin() { return location_iterator(); }
@@ -115,7 +120,18 @@ namespace hyper {
             }
             return false;
         }
-
+        inline bool prefix_dec()
+        {
+            if(location_iterator<XX...>::prefix_dec()) {
+                if(coordinate == 0) {
+                    coordinate = X-1;
+                    return true;
+                }
+                coordinate -= 1;
+            }
+            return false;
+        }
+        
     public:
         location_iterator()
             : location_iterator<XX...>()
@@ -150,7 +166,12 @@ namespace hyper {
             prefix_inc();
             return *this;
         }
-
+        inline location_iterator& operator--()
+        {
+            prefix_dec();
+            return *this;
+        }
+        
         static inline location_iterator begin() { return location_iterator(); }
         static inline location_iterator end()
         {
@@ -364,6 +385,11 @@ namespace hyper {
                 ++_loc;
                 return *this;
             }
+            inline iterator& operator--()
+            {
+                --_loc;
+                return *this;
+            }
             inline bool operator!=(const iterator& other) { return _loc != other._loc; }
             inline typename std::vector<T>::reference operator[](int offset) { return _data[_loc + offset]; }
             inline unsigned coordinate(unsigned c) const { return _loc[c]; }
@@ -404,6 +430,11 @@ namespace hyper {
                 ++_loc;
                 return *this;
             }
+            inline const_iterator& operator--()
+            {
+                --_loc;
+                return *this;
+            }
             inline bool operator!=(const const_iterator& other) { return _loc != other._loc; }
             inline typename std::vector<T>::const_reference operator[](int offset) const
             {
@@ -439,6 +470,9 @@ namespace hyper {
         inline const_iterator begin() const { return const_iterator(data, space_offsets::begin()); }
         inline const_iterator end() const { return const_iterator(data, space_offsets::end()); }
 
+        inline iterator imap(iterator it) { return iterator(data, it._loc); }
+        inline const_iterator imap(const_iterator it) const { return const_iterator(data, it._loc); }
+        
         template <typename... CC>
         inline iterator at(CC... cc)
         {
