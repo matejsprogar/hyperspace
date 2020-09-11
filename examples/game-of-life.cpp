@@ -78,7 +78,7 @@ namespace examples {
             // std::cout << grid << std::endl; // uncomment this line to display the moving glider
         } while(initial != grid);
 
-        assert(iterations == 4);
+        assert(iterations == 40);
     }
 
     void game_of_life_3D()

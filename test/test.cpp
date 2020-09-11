@@ -81,6 +81,26 @@ namespace test {
             assert(2 == it[2]);
         },
         []() {
+            std::clog << "iterator prefix increment 1-D test\n";
+            wrapped_space<int, 3> spc;
+            auto it = spc.begin();
+            assert(0 == it);
+            ++it;
+            assert(1 == it);
+            ++it;
+            assert(2 == it);
+            ++it;
+            assert(spc.end() == it);
+        },
+        []() {
+            std::clog << "iterator prefix decrement 1-D test\n";
+            wrapped_space<int, 3> spc;
+            auto it = spc.begin();
+            ++it;
+            --it;
+            assert(spc.begin() == it);
+        },
+        []() {
             std::clog << "iterator prefix increment 3-D test\n";
             unwrapped_space_offsets<4, 3, 2>::iterator it;
             assert(0 == it[0]);
