@@ -27,6 +27,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <string>
 
 namespace sprogar
 {
@@ -106,7 +107,7 @@ protected:
 
 		if(coordinate == 0)
 			typ += 1 * D;
-		else if(coordinate == X - 1)
+		else if(coordinate+1 == X)
 			typ += 2 * D;
 
 		typ += location_iterator<XX...>::template neighborhood_type<3 * D>();
@@ -298,7 +299,7 @@ std::vector<std::vector<int>> make_neighborhoods()
 	}
 
 	std::vector<std::vector<int>> ret;
-	ret.resize(std::pow(3, sizeof...(XX)));
+	ret.resize((size_t)std::pow(3, sizeof...(XX)));
 
 	for(auto&& pair : M)
 		ret[pair.first] = std::move(pair.second);
@@ -403,7 +404,7 @@ public:
 			return *this;
 		}
 		inline bool operator!=(const iterator& rhs) const { return !(*this == rhs); }
-		inline bool operator==(const iterator& rhs) const { return _loc == rhs._loc and _data == rhs._data; }
+		inline bool operator==(const iterator& rhs) const { return _loc == rhs._loc; }
 		inline typename std::vector<T>::reference operator[](int offset) { return _data[_loc + offset]; }
 		inline unsigned coordinate(unsigned c) const { return _loc[c]; }
 	};
@@ -455,7 +456,7 @@ public:
 			return *this;
 		}
 		inline bool operator!=(const const_iterator& rhs) const { return !(*this == rhs); }
-		inline bool operator==(const const_iterator& rhs) const { return _loc == rhs._loc and _data == rhs._data; }
+		inline bool operator==(const const_iterator& rhs) const { return _loc == rhs._loc; }
 		inline typename std::vector<T>::const_reference operator[](int offset) const
 		{
 			return _data[_loc + offset];
@@ -482,7 +483,7 @@ public:
 	inline typename std::vector<T>::reference operator[](unsigned pos) { return data[pos]; }
 	inline typename std::vector<T>::const_reference operator[](unsigned pos) const { return data[pos]; }
 
-	inline size_t size() const { return data.size(); }
+	inline static constexpr size_t size() { return space_offsets::size(); }
 	inline static constexpr size_t dimension() { return sizeof...(XX); }
 
 	inline iterator begin() { return iterator(data, space_offsets::begin()); }
