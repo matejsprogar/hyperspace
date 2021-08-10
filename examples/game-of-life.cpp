@@ -61,7 +61,8 @@ namespace examples {
     {
         std::cout << "Game of life 2D test\n";
 
-        hyper::wrapped_space<bool, 5, 10> grid(false), old_grid(false);
+        const unsigned Radius = 1;
+        hyper::wrapped_space<bool, Radius, 5, 10> grid(false), old_grid(false);
 
         // create a glider
         grid(0, 1) = grid(1, 2) = grid(2, 0) = grid(2, 1) = grid(2, 2) = true;
@@ -85,7 +86,8 @@ namespace examples {
     {
         std::cout << "Game of life 3D test\n";
 
-        hyper::wrapped_space<bool, 2, 5, 10> grid(false), old_grid(false);
+        const unsigned Radius = 1;
+        hyper::wrapped_space<bool, Radius, 2, 5, 10> grid(false), old_grid(false);
 
         // a 3-D glider
         grid(0, 0, 1) = grid(0, 1, 2) = grid(0, 2, 0) = grid(0, 2, 1) = grid(0, 2, 2) = true;

@@ -44,6 +44,10 @@ protected:
 	};
 	size_t pos1d;
 
+	location_iterator(size_t, dummy pos)
+		: pos1d{ pos.value }
+	{
+	}
 	location_iterator(dummy pos)
 		: pos1d{ pos.value }
 	{
@@ -55,7 +59,6 @@ protected:
 		return 0;
 	}
 	inline void increment() {}
-	inline size_t size() const { return 1; }
 
 public:
 	location_iterator()
@@ -76,6 +79,22 @@ public:
 		pos1d -= 1;
 		return true;
 	}
+
+inline location_iterator& operator++()
+{
+	prefix_inc();
+	return *this;
+}
+inline location_iterator& operator--()
+{
+	prefix_dec();
+	return *this;
+}
+
+
+
+
+	inline size_t size() const { return 1; }
 	inline unsigned operator[](unsigned) const { return -1; }
 
 	static inline location_iterator begin() { return location_iterator(); }
@@ -87,6 +106,22 @@ public:
 	}
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 template <unsigned X, unsigned... XX>
 class location_iterator<X, XX...> : public location_iterator<XX...>
 {
@@ -97,6 +132,11 @@ protected:
 	location_iterator(typename location_iterator<XX...>::dummy pos, unsigned c, CC... cc)
 		: location_iterator<XX...>(typename location_iterator<XX...>::dummy(pos.value * X + c), cc...)
 		, coordinate(c)
+	{
+	}
+	location_iterator(size_t id, typename location_iterator<XX...>::dummy pos)
+		: location_iterator<XX...>(id % location_iterator<XX...>::size(), pos)
+		, coordinate(id / location_iterator<XX...>::size())
 	{
 	}
 
@@ -113,7 +153,6 @@ protected:
 		typ += location_iterator<XX...>::template neighborhood_type<3 * D>();
 		return typ;
 	}
-	inline size_t size() const { return X * location_iterator<XX...>::size(); }
 	inline bool prefix_inc()
 	{
 		if(location_iterator<XX...>::prefix_inc()) {
@@ -150,6 +189,12 @@ public:
 		, coordinate(c)
 	{
 	}
+
+	location_iterator(size_t pos) : location_iterator(pos, typename location_iterator<XX...>::dummy(pos))
+	{
+	}
+
+	inline size_t size() const { return X * location_iterator<XX...>::size(); }
 
 	inline unsigned operator[](unsigned d) const
 	{
@@ -226,12 +271,45 @@ std::vector<int> make_offset(const location_iterator<X, XX...>& loc)
 
 	set.erase(0);
 	std::vector<int> vec;
-	vec.reserve(set.size());
-	for(auto x : set)
-		vec.push_back(x);
+	vec.insert(vec.begin(), set.begin(), set.end());
 
 	return vec;
 }
+
+
+template <unsigned Radius, bool wrap>
+inline std::vector<int> make_offset(const location_iterator<>& loc)
+{
+	return std::vector<int>();
+}
+template <unsigned Radius, bool wrap, unsigned X, unsigned... XX>
+std::vector<int> make_offset(const location_iterator<X, XX...>& loc)
+{
+	std::set<int> total;
+	loc.template make_offset<wrap>(total, 0, 1);
+	total.erase(0);
+
+	for (unsigned r = 1; r < Radius; ++r)
+	{
+		std::set<int> todo(total);
+		for (int off : todo) {
+			location_iterator<X, XX...> it((size_t)loc + off);
+
+			std::set<int> ring;
+			it.template make_offset<wrap>(ring, 0, 1);
+
+			for (int x : ring)
+				total.insert(off + x);
+			total.erase(0);
+		}
+	}
+
+	std::vector<int> vec;
+	vec.insert(vec.begin(), total.begin(), total.end());
+
+	return vec;
+}
+
 
 template <bool wrap, unsigned... XX>
 class iterable_space
@@ -298,14 +376,15 @@ std::vector<std::vector<int>> make_neighborhoods()
 			M[typ] = make_offset<wrap>(loc);
 	}
 
-	std::vector<std::vector<int>> ret;
-	ret.resize((size_t)std::pow(3, sizeof...(XX)));
+	std::vector<std::vector<int>> ret((size_t)std::pow(3, sizeof...(XX)));
 
 	for(auto&& pair : M)
 		ret[pair.first] = std::move(pair.second);
 
 	return ret;
 }
+
+
 
 template <bool wrap, unsigned... XX>
 class iterable_offsets : public iterable_space<wrap, XX...>
@@ -342,7 +421,7 @@ inline const std::vector<int>& unwrapped_neighbors_offsets(const location_iterat
 	return unwrapped_space_offsets<XX...>::neighbors_offsets(it.type());
 }
 
-template <typename T, bool wrap, unsigned... XX>
+template <typename T, unsigned R, bool wrap, unsigned... XX>
 class grid
 {
 	std::vector<T> data; // std::array<> is not moveable
@@ -536,11 +615,11 @@ public:
 	inline bool operator==(const grid& oth) const { return data == oth.data; }
 };
 
-template <typename T, unsigned... XX>
-using wrapped_space = grid<T, true, XX...>;
+template <typename T, unsigned Radius, unsigned... XX>
+using wrapped_space = grid<T, Radius, true, XX...>;
 
-template <typename T, unsigned... XX>
-using unwrapped_space = grid<T, false, XX...>;
+template <typename T, unsigned Radius, unsigned... XX>
+using unwrapped_space = grid<T, Radius, false, XX...>;
 
 } // namespace hyper
 } // namespace sprogar

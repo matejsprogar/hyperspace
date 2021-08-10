@@ -21,6 +21,7 @@
 #include <cassert>
 #include <iostream>
 #include <vector>
+#include <array>
 
 #include "../include/hyper.h"
 
@@ -30,6 +31,42 @@ namespace test {
 
     typedef void (*voidfunc)();
     std::vector<voidfunc> all_tests = {
+       []() {
+            std::clog << "location iterator construction via id\n";
+            location_iterator<40, 7> it(145);
+            assert(it == 145U);
+            assert(5 == it[0]);
+            assert(20 == it[1]);
+        },
+        []() {
+            std::clog << "location iterator construction via coordinates\n";
+            location_iterator<40, 7> it(20,5);
+            assert(it == 145U);
+            assert(5 == it[0]);
+            assert(20 == it[1]);
+        },
+        []() {
+            std::clog << "simple radius 2 unwrapped neighborhood test\n";
+            const unsigned D = 5;
+            typedef location_iterator<D> lit;
+            const unsigned Radius = 2;
+            assert((make_offset<Radius, false, D>(lit(0))) == std::vector<int>({ 1, 2 }));
+            assert((make_offset<Radius, false, D>(lit(1))) == std::vector<int>({ -1, 1, 2 }));
+            assert((make_offset<Radius, false, D>(lit(2))) == std::vector<int>({ -2, -1, 1, 2 }));
+            assert((make_offset<Radius, false, D>(lit(3))) == std::vector<int>({ -2, -1, 1 }));
+            assert((make_offset<Radius, false, D>(lit(4))) == std::vector<int>({ -2, -1 }));
+        },
+        []() {
+            std::clog << "simple radius 2 wrapped neighborhood test\n";
+            const unsigned D = 5;
+            typedef location_iterator<D> lit;
+            const unsigned Radius = 2;
+            assert((make_offset<Radius, true, D>(lit(0))) == std::vector<int>({ 1, 2, 3, 4 }));
+            assert((make_offset<Radius, true, D>(lit(1))) == std::vector<int>({ -1, 1, 2, 3 }));
+            assert((make_offset<Radius, true, D>(lit(2))) == std::vector<int>({ -2, -1, 1, 2 }));
+            assert((make_offset<Radius, true, D>(lit(3))) == std::vector<int>({ -3, -2, -1, 1 }));
+            assert((make_offset<Radius, true, D>(lit(4))) == std::vector<int>({ -4, -3, -2, -1 }));
+        },
         []() {
             std::clog << "null space neighbor offset test\n";
             assert(wrapped_space_offsets<0>::neighbors_offsets(0) == std::vector<int>({}));
@@ -82,7 +119,7 @@ namespace test {
         },
         []() {
             std::clog << "iterator prefix increment 1-D test\n";
-            wrapped_space<int, 3> spc;
+            wrapped_space<int, 1/*Radius*/, 3> spc;
             auto it = spc.begin();
             assert(0 == it);
             ++it;
@@ -94,7 +131,7 @@ namespace test {
         },
         []() {
             std::clog << "iterator prefix decrement 1-D test\n";
-            wrapped_space<int, 3> spc;
+            wrapped_space<int, 1/*Radius*/, 3> spc;
             auto it = spc.begin();
             ++it;
             --it;
@@ -257,7 +294,7 @@ namespace test {
             std::clog << "non-existing coordinate test\n";
             typedef unwrapped_space_offsets<2, 3> space;
             space::iterator it;
-            assert(-1U == it[space::dimension()]);
+            assert((unsigned)-1 == it[space::dimension()]);
         },
         []() {
             std::clog << "access to default location coordinates 2-D test\n";
@@ -334,7 +371,7 @@ namespace test {
         },
         []() {
             std::clog << "iterator API: neighborhood size test\n";
-            unwrapped_space<bool, 3, 3> u2d;
+            unwrapped_space<bool, 1/*Radius*/, 3, 3> u2d;
 
             auto it = u2d.begin();
             assert(it.size() == 3); // corner
@@ -349,7 +386,7 @@ namespace test {
         },
         []() {
             std::clog << "iterator API: element coordinate test\n";
-            unwrapped_space<bool, 3, 3> u2d;
+            unwrapped_space<bool, 1/*Radius*/, 3, 3> u2d;
 
             auto it = u2d.begin();
             assert(it.coordinate(0) == 0); // corner x
@@ -397,19 +434,20 @@ namespace test {
         },
         []() {
             std::clog << "space size initialization test\n";
-            wrapped_space<int, 1> spc;
+            wrapped_space<int, 1/*Radius*/, 1> spc;
 
             assert(spc.size() == 1);
         },
         []() {
             std::clog << "space initialization by const value test\n";
-            wrapped_space<int, 1> spc(42);
+            wrapped_space<int, 1/*Radius*/, 2> spc(42);
 
             assert(spc[0] == 42);
+            assert(spc[1] == 42);
         },
         []() {
             std::clog << "space initialization by function test\n";
-            wrapped_space<int, 2> spc([]() {
+            wrapped_space<int, 1/*Radius*/, 2> spc([]() {
                 static int g = 42;
                 return g++;
             });
@@ -419,7 +457,7 @@ namespace test {
         },
         []() {
             std::clog << "const_iterator read test\n";
-            wrapped_space<int, 2, 2> spc(7);
+            wrapped_space<int, 1/*Radius*/, 2, 2> spc(7);
 
             int total = 0;
             for(auto it = spc.begin(); it != spc.end(); ++it)
@@ -429,7 +467,7 @@ namespace test {
         },
         []() {
             std::clog << "iterator write test\n";
-            wrapped_space<int, 2, 2> spc;
+            wrapped_space<int, 1/*Radius*/, 2, 2> spc;
 
             int i = 1;
             for(auto& x : spc)
@@ -448,8 +486,8 @@ namespace test {
                 uncopyable(const uncopyable&) = delete;
                 uncopyable& operator=(const uncopyable&) = delete;
             };
-            wrapped_space<uncopyable, 3> spc1;
-            wrapped_space<uncopyable, 3> spc2;
+            wrapped_space<uncopyable, 1/*Radius*/, 3> spc1;
+            wrapped_space<uncopyable, 1/*Radius*/, 3> spc2;
 
             const auto* p1 = &spc1[0];
             const auto* p2 = &spc2[0];
@@ -479,9 +517,9 @@ namespace test {
                     return *this;
                 }
             };
-            wrapped_space<copyable, 3> spc1;
+            wrapped_space<copyable, 1/*Radius*/, 3> spc1;
             assert(spc1[0].copied == false);
-            wrapped_space<copyable, 3> spc2(spc1);
+            wrapped_space<copyable, 1/*Radius*/, 3> spc2(spc1);
             assert(spc2[0].copied == true);
 
             spc1 = spc2;
@@ -489,7 +527,7 @@ namespace test {
         },
         []() {
             std::clog << "README.md usage test\n";
-            hyper::wrapped_space<int, 5, 7> spc{ 0 };
+            hyper::wrapped_space<int, 1/*Radius*/, 5, 7> spc{ 0 };
             spc(3, 4) = 42;
 
             assert(spc[0] == 0);
@@ -508,21 +546,21 @@ namespace test {
 
         []() {
             std::clog << "API functionality: default construction test\n";
-            hyper::unwrapped_space<int, 3> spc;
+            hyper::unwrapped_space<int, 1/*Radius*/, 3> spc;
             assert(spc[0] == 0);
             assert(spc[1] == 0);
             assert(spc[2] == 0);
         },
         []() {
             std::clog << "API functionality: construction with initialization test\n";
-            hyper::unwrapped_space<int, 3> spc{ 42 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 3> spc{ 42 };
             assert(spc[0] == 42);
             assert(spc[1] == 42);
             assert(spc[2] == 42);
         },
         []() {
             std::clog << "API functionality: construction by lambda test\n";
-            hyper::unwrapped_space<int, 3> spc{ []() {
+            hyper::unwrapped_space<int, 1/*Radius*/, 3> spc{ []() {
                 static int i = 0;
                 return i++;
             } };
@@ -532,7 +570,7 @@ namespace test {
         },
         []() {
             std::clog << "API functionality: random access syntax 1 test\n";
-            hyper::unwrapped_space<int, 3, 4> spc{ 0 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 3, 4> spc{ 0 };
             spc[1] = 42;
 
             assert(spc[0] == 0);
@@ -541,7 +579,7 @@ namespace test {
         },
         []() {
             std::clog << "API functionality: random access syntax 2 test\n";
-            hyper::unwrapped_space<int, 3, 4> spc{ 0 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 3, 4> spc{ 0 };
             spc(0, 1) = 42;
 
             assert(spc[0] == 0);
@@ -550,7 +588,7 @@ namespace test {
         },
         []() {
             std::clog << "API functionality: random access syntax 3 test\n";
-            hyper::unwrapped_space<int, 3, 4> spc{ 0 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 3, 4> spc{ 0 };
             auto cell = spc.at(0, 1);
             *cell = 42;
 
@@ -560,7 +598,7 @@ namespace test {
         },
         []() {
             std::clog << "API functionality: cell iteration syntax 1 test\n";
-            hyper::unwrapped_space<int, 5> spc{ 0 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 5> spc{ 0 };
             for(auto it = spc.begin(); it != spc.end(); ++it)
                 *it = 42;
 
@@ -572,7 +610,7 @@ namespace test {
         },
         []() {
             std::clog << "API functionality: cell iteration syntax 2 test\n";
-            hyper::unwrapped_space<int, 5> spc{ 0 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 5> spc{ 0 };
             for(int& x : spc)
                 x = 42;
 
@@ -581,7 +619,7 @@ namespace test {
         },
         []() {
             std::clog << "API functionality: neighbors access syntax 1 test\n";
-            hyper::unwrapped_space<int, 5> spc{ 0 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 5> spc{ 0 };
             auto cell = spc.at(2);
 
             for(int off : cell.neighbors_offsets())
@@ -595,7 +633,7 @@ namespace test {
         },
         []() {
             std::clog << "API functionality:  neighbors access syntax 2 test\n";
-            hyper::unwrapped_space<int, 5> spc{ 0 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 5> spc{ 0 };
             auto cell = spc.at(2);
 
             for(int off : cell)
@@ -609,7 +647,7 @@ namespace test {
         },
         []() {
             std::clog << "API functionality:  neighbors access syntax 3 test\n";
-            hyper::unwrapped_space<int, 5> spc{ 0 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 5> spc{ 0 };
             auto cell = spc.at(2);
 
             for(auto off = cell.begin(); off != cell.end(); ++off)
@@ -623,7 +661,7 @@ namespace test {
         },
         []() {
             std::clog << "API functionality: neighbors access syntax 4 test\n";
-            hyper::unwrapped_space<int, 5> spc{ 0 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 5> spc{ 0 };
             auto cell = spc.at(2);
 
             for(int off : cell.neighbors_offsets())
@@ -637,7 +675,7 @@ namespace test {
         },
         []() {
             std::clog << "API functionality:  neighbors access syntax 5 test\n";
-            hyper::unwrapped_space<int, 5> spc{ 0 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 5> spc{ 0 };
             auto cell = spc.at(2);
 
             for(int x : cell)
@@ -651,7 +689,7 @@ namespace test {
         },
         []() {
             std::clog << "API functionality:  neighbors access syntax 6 test\n";
-            hyper::unwrapped_space<int, 5> spc{ 0 };
+            hyper::unwrapped_space<int, 1/*Radius*/, 5> spc{ 0 };
             auto cell = spc.at(2);
 
             for(int& x : cell.neighbors())
@@ -665,29 +703,29 @@ namespace test {
         },
         []() {
             std::clog << "grid iterator access test\n";
-            wrapped_space<int, 2, 2> spc;
-            wrapped_space<int, 2, 2>::iterator it = spc.begin();
+            wrapped_space<int, 1/*Radius*/, 2, 2> spc;
+            wrapped_space<int, 1/*Radius*/, 2, 2>::iterator it = spc.begin();
             *it = 42;
             assert(spc[0] == 42);
         },
         []() {
             std::clog << "grid const_iterator access test\n";
-            const wrapped_space<int, 2, 2> spc;
-            wrapped_space<int, 2, 2>::const_iterator it = spc.begin();
+            const wrapped_space<int, 1/*Radius*/, 2, 2> spc;
+            wrapped_space<int, 1/*Radius*/, 2, 2>::const_iterator it = spc.begin();
             assert(*it == 0);
         },
         []() {
             std::clog << "grid iterator pointer access test\n";
-            wrapped_space<std::pair<int, int>, 2, 2> spc;
-            wrapped_space<std::pair<int, int>, 2, 2>::iterator it = spc.begin();
+            wrapped_space<std::pair<int, int>, 1/*Radius*/, 2, 2> spc;
+            wrapped_space<std::pair<int, int>, 1/*Radius*/, 2, 2>::iterator it = spc.begin();
             it->first = 42;
             it->second = 1;
             assert(spc[0] == std::make_pair(42, 1));
         },
         []() {
             std::clog << "grid const_iterator pointer access test\n";
-            const wrapped_space<std::pair<int, int>, 2, 2> spc;
-            wrapped_space<std::pair<int, int>, 2, 2>::const_iterator it = spc.begin();
+            const wrapped_space<std::pair<int, int>, 1/*Radius*/, 2, 2> spc;
+            wrapped_space<std::pair<int, int>, 1/*Radius*/, 2, 2>::const_iterator it = spc.begin();
             assert(*it == std::make_pair(0, 0));
         },
         []() {
