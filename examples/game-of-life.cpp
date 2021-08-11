@@ -27,8 +27,8 @@ namespace sprogar {
 namespace examples {
 
     // custom 2D grid output
-    template <typename T, bool W, unsigned D1, unsigned D0>
-    std::ostream& operator << (std::ostream& os, const hyper::grid<T, W, D1, D0>& spc)
+    template <typename T, unsigned R, bool W, unsigned D1, unsigned D0>
+    std::ostream& operator << (std::ostream& os, const hyper::grid<T, R, W, D1, D0>& spc)
     {
         int d0 = 1;
         for(auto b : spc) {
@@ -48,7 +48,7 @@ namespace examples {
         // for each cell in the grid
         for(auto it = old.begin(); it != old.end(); ++it) {
             int living_neighbors = 0;
-            for(auto off : it)
+            for(int off : it)
                 living_neighbors += it[off]; // bool -> 0 | 1
 
             // exercise the CA rule to determine the new state
@@ -66,7 +66,7 @@ namespace examples {
 
         // create a glider
         grid(0, 1) = grid(1, 2) = grid(2, 0) = grid(2, 1) = grid(2, 2) = true;
-        const auto initial = grid;
+        const auto initial(grid);
 
         assert(initial == grid);
         int iterations = 0;
@@ -86,13 +86,13 @@ namespace examples {
     {
         std::cout << "Game of life 3D test\n";
 
-        const unsigned Radius = 1;
-        hyper::wrapped_space<bool, Radius, 2, 5, 10> grid(false), old_grid(false);
+        typedef hyper::wrapped_space<bool, 1/*R*/, 2, 5, 10> Grid;
+        Grid grid(false), old_grid(false);
 
         // a 3-D glider
         grid(0, 0, 1) = grid(0, 1, 2) = grid(0, 2, 0) = grid(0, 2, 1) = grid(0, 2, 2) = true;
         grid(1, 0, 1) = grid(1, 1, 2) = grid(1, 2, 0) = grid(1, 2, 1) = grid(1, 2, 2) = true;
-        const auto initial = grid;
+        const Grid initial = grid;
 
         assert(initial == grid);
         int iterations = 0;
