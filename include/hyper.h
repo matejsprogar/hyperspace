@@ -102,20 +102,6 @@ namespace sprogar
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		template <unsigned R, unsigned X, unsigned... XX>
 		class location_iterator<R, X, XX...> : public location_iterator<R, XX...>
 		{
@@ -279,17 +265,6 @@ namespace sprogar
 				return vec;
 			}
 		};
-
-
-
-
-
-
-
-
-
-
-
 
 
 
