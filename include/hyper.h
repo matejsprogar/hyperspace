@@ -119,7 +119,7 @@ namespace sprogar
 			}
 			// construct by id
 			location_iterator(unsigned c, typename root::dummy pos)
-				: base(c% base::size(), pos), coordinate(c)
+				: base(c % base::size(), pos), coordinate(c / base::size())
 			{
 			}
 
@@ -170,7 +170,7 @@ namespace sprogar
 			}
 
 			location_iterator(size_t pos) :
-				base(pos% base::size(), typename root::dummy{ pos }), coordinate(pos / base::size())
+				base(pos % base::size(), typename root::dummy{ pos }), coordinate(pos / base::size())
 			{
 			}
 
