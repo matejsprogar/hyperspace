@@ -40,10 +40,11 @@ namespace sprogar {
 		},
 		[]() {
 			std::clog << "iterator construction via id\n";
-			location_iterator<1/*R*/, 40, 7> it(145);
+			location_iterator<1/*R*/, 2, 40, 7> it(145);
 			assert(it == 145U);
 			assert(5 == it[0]);
 			assert(20 == it[1]);
+			assert(0 == it[2]);
 		},
 		[]() {
 			std::clog << "iterator construction via coordinates\n";
