@@ -34,7 +34,7 @@ namespace sprogar {
 		[]() {
 			std::clog << "default iterator construction\n";
 			location_iterator<1/*R*/, 40, 7> it;
-			assert(it == 0);
+			assert(0 == it);
 			assert(0 == it[0]);
 			assert(0 == it[1]);
 		},

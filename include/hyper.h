@@ -61,6 +61,12 @@ namespace sprogar
 			}
 
 			inline bool operator!=(const location_iterator& other) const { return pos1d != other.pos1d; }
+
+			template <class OtherIterator>
+			inline bool equal_coordinates(const OtherIterator& other) const
+			{
+				return true;
+			}
 			inline operator size_t() const { return pos1d; }
 
 			inline bool prefix_inc()
@@ -87,7 +93,7 @@ namespace sprogar
 				return *this;
 			}
 
-			inline size_t size() const { return 1; }
+			inline static constexpr size_t size() { return 1; }
 			inline unsigned operator[](unsigned) const { return -1; }
 
 			static inline location_iterator begin() { return location_iterator(); }
@@ -105,6 +111,7 @@ namespace sprogar
 		template <unsigned R, unsigned X, unsigned... XX>
 		class location_iterator<R, X, XX...> : public location_iterator<R, XX...>
 		{
+		public:
 			typedef location_iterator<R> root;
 			typedef location_iterator<R, XX...> base;
 
@@ -174,7 +181,7 @@ namespace sprogar
 			{
 			}
 
-			inline size_t size() const { return X * base::size(); }
+			inline static constexpr size_t size() { return X * base::size(); }
 
 			inline unsigned operator[](unsigned d) const
 			{
@@ -187,6 +194,14 @@ namespace sprogar
 			{
 				return root::pos1d != other.pos1d;
 			}
+
+			template <class OtherIterator>
+			inline bool equal_coordinates(const OtherIterator& other) const
+			{
+				//assert(sizeof...(XX) == sizeof...(OtherIterator::XX));
+				return coordinate == other.coordinate and base::equal_coordinates((const OtherIterator::base&)other);
+			}
+
 			inline operator size_t() const { return root::pos1d; }
 
 			inline unsigned type() const { return neighborhood_type<1>(); }
@@ -277,7 +292,10 @@ namespace sprogar
 			static inline unsigned id_helper() { return 0; }
 
 		public:
-			static inline constexpr std::string info() { return wrap ? "wrapped" : "unwrapped"; }
+			static inline constexpr std::string info() { 
+				const std::string msg = std::string("wrapped R") + std::to_string(R) + " [";
+				return wrap ? msg : std::string("un") + msg; 
+			}
 			static inline constexpr unsigned dimension() { return 0; }
 			static inline constexpr unsigned dimension(unsigned) { return 0; }
 			static inline constexpr size_t size() { return 1; }
@@ -300,7 +318,7 @@ namespace sprogar
 		public:
 			static inline constexpr std::string info()
 			{
-				return std::to_string(X) + (sizeof...(XX) > 0 ? 'x' : ' ') + iterable_space<wrap, R, XX...>::info();
+				return iterable_space<wrap, R, XX...>::info() + (sizeof...(XX) > 0 ? "," : "") + std::to_string(X);
 			}
 			static inline constexpr unsigned dimension() { return 1 + sizeof...(XX); }
 			static inline constexpr unsigned dimension(unsigned D)
@@ -509,7 +527,7 @@ namespace sprogar
 					data.push_back(f());
 			}
 
-			static inline constexpr std::string info() { return space_offsets::info(); }
+			static inline constexpr std::string info() { return space_offsets::info() + ']'; }
 
 			inline typename std::vector<T>::reference operator[](unsigned pos) { return data[pos]; }
 			inline typename std::vector<T>::const_reference operator[](unsigned pos) const { return data[pos]; }
