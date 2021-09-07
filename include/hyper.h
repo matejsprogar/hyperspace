@@ -69,12 +69,12 @@ namespace sprogar
 			}
 			inline operator size_t() const { return pos1d; }
 
-			inline bool prefix_inc()
+			inline bool move_next()
 			{
 				pos1d += 1;
 				return true;
 			}
-			inline bool prefix_dec()
+			inline bool move_prev()
 			{
 				pos1d -= 1;
 				return true;
@@ -84,13 +84,25 @@ namespace sprogar
 
 			inline location_iterator& operator++()
 			{
-				prefix_inc();
+				move_next();
 				return *this;
+			}
+			inline location_iterator operator++(int)
+			{
+				auto old = *this;
+				move_next();
+				return old;
 			}
 			inline location_iterator& operator--()
 			{
-				prefix_dec();
+				move_prev();
 				return *this;
+			}
+			inline location_iterator operator--(int)
+			{
+				auto old = *this;
+				move_prev();
+				return old;
 			}
 
 			inline static constexpr size_t size() { return 1; }
@@ -143,9 +155,9 @@ namespace sprogar
 				typ += base::template neighborhood_type<D* (2 * R + 1)>();
 				return typ;
 			}
-			inline bool prefix_inc()
+			inline bool move_next()
 			{
-				if (base::prefix_inc()) {
+				if (base::move_next()) {
 					coordinate += 1;
 					if (coordinate == X) {
 						coordinate = 0;
@@ -154,9 +166,9 @@ namespace sprogar
 				}
 				return false;
 			}
-			inline bool prefix_dec()
+			inline bool move_prev()
 			{
-				if (base::prefix_dec()) {
+				if (base::move_prev()) {
 					if (coordinate == 0) {
 						coordinate = X - 1;
 						return true;
@@ -208,13 +220,25 @@ namespace sprogar
 
 			inline location_iterator& operator++()
 			{
-				prefix_inc();
+				move_next();
 				return *this;
+			}
+			inline location_iterator operator++(int)
+			{
+				auto old = *this;
+				move_next();
+				return old;
 			}
 			inline location_iterator& operator--()
 			{
-				prefix_dec();
+				move_prev();
 				return *this;
+			}
+			inline location_iterator operator--(int)
+			{
+				auto old = *this;
+				move_prev();
+				return old;
 			}
 
 			static inline location_iterator begin() { return location_iterator(); }
