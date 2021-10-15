@@ -5,7 +5,7 @@
 
 <h2>Rationale</h2>
 
-<p>The main benefit of the library is the <i>readability</i> of the programming code that handles data in a multi-dimensional space consisting of a number of neighboring cells. The library provides a simple and consistent programming interface for accessing all cells and their respective neighbors. Moreover, it does this in high-dimensional spaces of arbitrary size (limited only with available computer memory) and in constant time. Currently the Moore's neighborhoods of range 1 are supported.
+<p>The main benefit of the library is the <i>readability</i> of the programming code that handles data in a multi-dimensional space consisting of a number of neighboring cells. The library provides a simple and consistent programming interface for accessing all cells and their respective neighbors. Moreover, it does this in high-dimensional spaces of arbitrary size (limited only with available computer memory) and in constant time. The Moore's neighborhoods of range <em>R</em> are supported.
 
 
 <h2>Complexity</h2>
