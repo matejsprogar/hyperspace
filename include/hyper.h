@@ -31,6 +31,9 @@
 
 namespace sprogar
 {
+	using position_t = std::size_t;
+	using offset_t = typename std::make_signed<position_t>::type;
+
 	namespace hyper
 	{
 		template <unsigned R, unsigned... XX>
@@ -38,16 +41,16 @@ namespace sprogar
 		{
 		protected:
 			struct dummy {
-				unsigned value;
-				dummy(unsigned u)
+				position_t value;
+				dummy(position_t u)
 					: value(u) {};
 			};
-			size_t pos1d;
+			position_t pos1d;
 
-			location_iterator(size_t, dummy pos) : pos1d{ pos.value }
+			location_iterator(position_t, dummy pos) : pos1d{ pos.value }
 			{
 			}
-			location_iterator(dummy pos, size_t = 0) : pos1d{ pos.value }
+			location_iterator(dummy pos, position_t = 0) : pos1d{ pos.value }
 			{
 			}
 
@@ -67,7 +70,7 @@ namespace sprogar
 			{
 				return true;
 			}
-			inline operator size_t() const { return pos1d; }
+			inline operator position_t() const { return pos1d; }
 
 			inline bool move_next()
 			{
@@ -105,14 +108,14 @@ namespace sprogar
 				return old;
 			}
 
-			inline static constexpr size_t size() { return 1; }
+			inline static constexpr std::size_t size() { return 1; }
 			inline unsigned operator[](unsigned) const { return -1; }
 
 			static inline location_iterator begin() { return location_iterator(); }
 			static inline location_iterator end() { return location_iterator(); }
 
 			template <bool>
-			inline unsigned make_offset(std::set<int>&, int, unsigned) const
+			inline unsigned make_offset(std::set<offset_t>&, offset_t, unsigned) const
 			{
 				return 1;
 			}
@@ -138,7 +141,7 @@ namespace sprogar
 			}
 			// construct by id
 			location_iterator(unsigned c, typename root::dummy pos)
-				: base(c % base::size(), pos), coordinate(c / base::size())
+				: base((unsigned)(c% base::size()), pos), coordinate((unsigned)(c / base::size()))
 			{
 			}
 
@@ -188,12 +191,12 @@ namespace sprogar
 			{
 			}
 
-			location_iterator(size_t pos) :
-				base(pos % base::size(), typename root::dummy{ pos }), coordinate(pos / base::size())
+			location_iterator(position_t pos) :
+				base((unsigned)(pos% base::size()), typename root::dummy{ pos }), coordinate((unsigned)(pos / base::size()))
 			{
 			}
 
-			inline static constexpr size_t size() { return X * base::size(); }
+			inline static constexpr std::size_t size() { return X * base::size(); }
 
 			inline unsigned operator[](unsigned d) const
 			{
@@ -214,7 +217,7 @@ namespace sprogar
 				return coordinate == other.coordinate and base::equal_coordinates((const OtherIterator::base&)other);
 			}
 
-			inline operator size_t() const { return root::pos1d; }
+			inline operator position_t() const { return root::pos1d; }
 
 			inline unsigned type() const { return neighborhood_type<1>(); }
 
@@ -250,7 +253,7 @@ namespace sprogar
 			}
 
 			template <bool wrap>
-			unsigned make_offset(std::set<int>& set, int offset, unsigned plane) const
+			unsigned make_offset(std::set<offset_t>& set, offset_t offset, unsigned plane) const
 			{
 				plane = base::template make_offset<wrap>(set, offset, plane);
 
@@ -277,28 +280,28 @@ namespace sprogar
 				return X * plane;
 			}
 			template <bool wrap>
-			std::vector<int> make_offset()
+			std::vector<offset_t> make_offset()
 			{
-				std::set<int> total;
+				std::set<offset_t> total;
 				make_offset<wrap>(total, 0, 1);
 				total.erase(0);
 
 				for (unsigned r = 1; r < R; ++r)
 				{
-					std::set<int> todo(total);
-					for (int off : todo) {
+					std::set<offset_t> todo(total);
+					for (offset_t off : todo) {
 						location_iterator it(root::pos1d + off);
 
-						std::set<int> ring;
+						std::set<offset_t> ring;
 						it.template make_offset<wrap>(ring, 0, 1);
 
-						for (int x : ring)
+						for (offset_t x : ring)
 							total.insert(off + x);
 						total.erase(0);
 					}
 				}
 
-				std::vector<int> vec;
+				std::vector<offset_t> vec;
 				vec.insert(vec.begin(), total.begin(), total.end());
 
 				return vec;
@@ -316,13 +319,13 @@ namespace sprogar
 			static inline unsigned id_helper() { return 0; }
 
 		public:
-			static inline constexpr std::string info() { 
+			static inline constexpr std::string info() {
 				const std::string msg = std::string("wrapped R") + std::to_string(R) + " [";
-				return wrap ? msg : std::string("un") + msg; 
+				return wrap ? msg : std::string("un") + msg;
 			}
 			static inline constexpr unsigned dimension() { return 0; }
 			static inline constexpr unsigned dimension(unsigned) { return 0; }
-			static inline constexpr size_t size() { return 1; }
+			static inline constexpr position_t size() { return 1; }
 
 			static inline constexpr location_iterator<R> begin() { return location_iterator<R>::begin(); }
 			static inline constexpr location_iterator<R> end() { return location_iterator<R>::end(); }
@@ -349,7 +352,7 @@ namespace sprogar
 			{
 				return D == sizeof...(XX) ? X : iterable_space<wrap, R, XX...>::dimension(D);
 			}
-			static inline constexpr size_t size() { return X * iterable_space<wrap, R, XX...>::size(); }
+			static inline constexpr position_t size() { return X * iterable_space<wrap, R, XX...>::size(); }
 			template <typename... UU>
 			static inline unsigned id(UU... uu)
 			{
@@ -362,9 +365,9 @@ namespace sprogar
 		};
 
 		template <bool wrap, unsigned R, unsigned... XX>
-		std::vector<std::vector<int>> make_neighborhoods()
+		std::vector<std::vector<offset_t>> make_neighborhoods()
 		{
-			std::map<unsigned, std::vector<int>> M;
+			std::map<unsigned, std::vector<offset_t>> M;
 
 			auto loc = location_iterator<R, XX...>::begin(), loc_end = location_iterator<R, XX...>::end();
 			for (; loc != loc_end; ++loc) {
@@ -373,7 +376,7 @@ namespace sprogar
 					M[typ] = loc.make_offset<wrap>();
 			}
 
-			std::vector<std::vector<int>> ret((unsigned)std::pow(2 * R + 1, sizeof...(XX)));
+			std::vector<std::vector<offset_t>> ret((unsigned)std::pow(2 * R + 1, sizeof...(XX)));
 
 			for (auto&& pair : M)
 				ret[pair.first] = std::move(pair.second);
@@ -386,12 +389,12 @@ namespace sprogar
 		template <bool wrap, unsigned R, unsigned... XX>
 		class iterable_offsets : public iterable_space<wrap, R, XX...>
 		{
-			static const std::vector<std::vector<int>> all_offsets;
+			static const std::vector<std::vector<offset_t>> all_offsets;
 
 		public:
 			typedef hyper::location_iterator<R, XX...> iterator;
 
-			static inline const std::vector<int>& neighbors_offsets(unsigned hood_type)
+			static inline const std::vector<offset_t>& neighbors_offsets(unsigned hood_type)
 			{
 				assert(hood_type < all_offsets.size());
 				return all_offsets[hood_type];
@@ -399,7 +402,7 @@ namespace sprogar
 		};
 
 		template <bool wrap, unsigned R, unsigned... XX>
-		const std::vector<std::vector<int>> iterable_offsets<wrap, R, XX...>::all_offsets = make_neighborhoods<wrap, R, XX...>();
+		const std::vector<std::vector<offset_t>> iterable_offsets<wrap, R, XX...>::all_offsets = make_neighborhoods<wrap, R, XX...>();
 
 		template <unsigned R, unsigned... XX>
 		using wrapped_space_offsets = iterable_offsets<true, R, XX...>;
@@ -441,25 +444,25 @@ namespace sprogar
 				inline typename std::vector<T>::reference operator*() { return _data[_loc]; }
 				inline typename std::vector<T>::pointer operator->() { return &_data[_loc]; }
 
-				inline std::vector<int>::const_iterator begin() const
+				inline std::vector<offset_t>::const_iterator begin() const
 				{
 					return space_offsets::neighbors_offsets(_loc.type()).begin();
 				}
-				inline std::vector<int>::const_iterator end() const
+				inline std::vector<offset_t>::const_iterator end() const
 				{
 					return space_offsets::neighbors_offsets(_loc.type()).end();
 				}
-				inline size_t size() const { return space_offsets::neighbors_offsets(_loc.type()).size(); }
+				inline position_t size() const { return space_offsets::neighbors_offsets(_loc.type()).size(); }
 				inline unsigned type() const { return _loc.type(); }
 
-				inline const std::vector<int>& neighbors_offsets() const
+				inline const std::vector<offset_t>& neighbors_offsets() const
 				{
 					return space_offsets::neighbors_offsets(_loc.type());
 				}
 				inline std::vector<std::reference_wrapper<T>> neighbors() const
 				{
 					std::vector<std::reference_wrapper<T>> ans;
-					for (int off : space_offsets::neighbors_offsets(_loc.type()))
+					for (offset_t off : space_offsets::neighbors_offsets(_loc.type()))
 						ans.push_back(std::ref(_data[_loc + off]));
 					return ans;
 				}
@@ -476,7 +479,7 @@ namespace sprogar
 				}
 				inline bool operator!=(const iterator& rhs) const { return !(*this == rhs); }
 				inline bool operator==(const iterator& rhs) const { return _loc == rhs._loc; }
-				inline typename std::vector<T>::reference operator[](int offset) { return _data[_loc + offset]; }
+				inline typename std::vector<T>::reference operator[](offset_t offset) { return _data[_loc + offset]; }
 				inline unsigned coordinate(unsigned c) const { return _loc[c]; }
 			};
 
@@ -500,18 +503,18 @@ namespace sprogar
 				inline typename std::vector<T>::const_reference operator*() const { return _data[_loc]; }
 				inline typename std::vector<T>::const_pointer operator->() const { return &_data[_loc]; }
 
-				inline std::vector<int>::const_iterator begin() const
+				inline std::vector<offset_t>::const_iterator begin() const
 				{
 					return space_offsets::neighbors_offsets(_loc.type()).begin();
 				}
-				inline std::vector<int>::const_iterator end() const
+				inline std::vector<offset_t>::const_iterator end() const
 				{
 					return space_offsets::neighbors_offsets(_loc.type()).end();
 				}
-				inline size_t size() const { return space_offsets::neighbors_offsets(_loc.type()).size(); }
+				inline position_t size() const { return space_offsets::neighbors_offsets(_loc.type()).size(); }
 				inline unsigned type() const { return _loc.type(); }
 
-				inline const std::vector<int>& neighbors_offsets() const
+				inline const std::vector<offset_t>& neighbors_offsets() const
 				{
 					return space_offsets::neighbors_offsets(_loc.type());
 				}
@@ -528,7 +531,7 @@ namespace sprogar
 				}
 				inline bool operator!=(const const_iterator& rhs) const { return !(*this == rhs); }
 				inline bool operator==(const const_iterator& rhs) const { return _loc == rhs._loc; }
-				inline typename std::vector<T>::const_reference operator[](int offset) const
+				inline typename std::vector<T>::const_reference operator[](offset_t offset) const
 				{
 					return _data[_loc + offset];
 				}
@@ -556,10 +559,10 @@ namespace sprogar
 			inline typename std::vector<T>::reference operator[](unsigned pos) { return data[pos]; }
 			inline typename std::vector<T>::const_reference operator[](unsigned pos) const { return data[pos]; }
 
-			inline static constexpr size_t size() { return space_offsets::size(); }
+			inline static constexpr position_t size() { return space_offsets::size(); }
 
-			inline static constexpr size_t dimension() { return sizeof...(XX); }
-			inline static constexpr size_t dimension(unsigned D) { return space_offsets::dimension(D); }
+			inline static constexpr position_t dimension() { return sizeof...(XX); }
+			inline static constexpr position_t dimension(unsigned D) { return space_offsets::dimension(D); }
 
 			inline iterator begin() { return iterator(data, space_offsets::begin()); }
 			inline iterator end() { return iterator(data, space_offsets::end()); }
@@ -581,11 +584,11 @@ namespace sprogar
 				static_assert(sizeof...(CC) == sizeof...(XX));
 				return const_iterator(data, location_iterator<R, XX...>(cc...));
 			}
-			inline static const std::vector<int>& neighbors_offsets(const location_iterator<R, XX...>& it)
+			inline static const std::vector<offset_t>& neighbors_offsets(const location_iterator<R, XX...>& it)
 			{
 				return space_offsets::neighbors_offsets(it.type());
 			}
-			inline static const std::vector<int>& neighbors_offsets(unsigned nhood_type)
+			inline static const std::vector<offset_t>& neighbors_offsets(unsigned nhood_type)
 			{
 				return space_offsets::neighbors_offsets(nhood_type);
 			}
@@ -595,14 +598,14 @@ namespace sprogar
 			{
 				static_assert(sizeof...(CC) == sizeof...(XX));
 				// return data[typename space_offsets::iterator(cc...)];
-				return data[(size_t)location_iterator<R, XX...>(cc...)];
+				return data[(position_t)location_iterator<R, XX...>(cc...)];
 			}
 			template <typename... CC>
 			inline typename std::vector<T>::const_reference operator()(CC... cc) const
 			{
 				static_assert(sizeof...(CC) == sizeof...(XX));
 				// return data[typename space_offsets::iterator(cc...)];
-				return data[(size_t)location_iterator<R, XX...>(cc...)];
+				return data[(position_t)location_iterator<R, XX...>(cc...)];
 			}
 
 			friend void swap(grid& lhs, grid& rhs) noexcept { lhs.data.swap(rhs.data); }
