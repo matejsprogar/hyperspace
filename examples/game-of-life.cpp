@@ -48,7 +48,7 @@ namespace examples {
         // for each cell in the grid
         for(auto it = old.begin(); it != old.end(); ++it) {
             int living_neighbors = 0;
-            for(int off : it)
+            for(auto off : it)
                 living_neighbors += it[off]; // bool -> 0 | 1
 
             // exercise the CA rule to determine the new state

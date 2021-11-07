@@ -528,7 +528,7 @@ namespace sprogar {
 			hyper::unwrapped_space<int, 1/*R*/, 5> spc{ 0 };
 			auto cell = spc.at(2);
 
-			for (int off : cell.neighbors_offsets())
+			for (auto off : cell.neighbors_offsets())
 			spc[cell + off] = 42;
 
 			assert(spc[0] == 0);
@@ -542,7 +542,7 @@ namespace sprogar {
 			hyper::unwrapped_space<int, 1/*R*/, 5> spc{ 0 };
 			auto cell = spc.at(2);
 
-			for (int off : cell)
+			for (auto off : cell)
 			spc[cell + off] = 42;
 
 			assert(spc[0] == 0);
@@ -570,7 +570,7 @@ namespace sprogar {
 			hyper::unwrapped_space<int, 1/*R*/, 5> spc{ 0 };
 			auto cell = spc.at(2);
 
-			for (int off : cell.neighbors_offsets())
+			for (auto off : cell.neighbors_offsets())
 			cell[off] = 42;
 
 			assert(spc[0] == 0);
@@ -584,7 +584,7 @@ namespace sprogar {
 			hyper::unwrapped_space<int, 1/*R*/, 5> spc{ 0 };
 			auto cell = spc.at(2);
 
-			for (int x : cell)
+			for (auto x : cell)
 			cell[x] = 42;
 
 			assert(spc[0] == 0);

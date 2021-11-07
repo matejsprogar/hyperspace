@@ -556,8 +556,8 @@ namespace sprogar
 
 			static inline constexpr std::string info() { return space_offsets::info() + ']'; }
 
-			inline typename std::vector<T>::reference operator[](unsigned pos) { return data[pos]; }
-			inline typename std::vector<T>::const_reference operator[](unsigned pos) const { return data[pos]; }
+			inline typename std::vector<T>::reference operator[](position_t pos) { return data[pos]; }
+			inline typename std::vector<T>::const_reference operator[](position_t pos) const { return data[pos]; }
 
 			inline static constexpr position_t size() { return space_offsets::size(); }
 
