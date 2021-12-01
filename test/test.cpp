@@ -143,33 +143,33 @@ namespace sprogar {
 		[]() {
 			std::clog << "null spc neighbor offset test\n";
 			wrapped_space<bool, 1/*R*/, 0> ws;
-			assert(ws.neighbors_offsets(0) == std::vector<int>());
-			assert(ws.neighbors_offsets(0) == std::vector<int>());
+			assert(ws.neighbors_offsets(0) == std::vector<offset_t>());
+			assert(ws.neighbors_offsets(0) == std::vector<offset_t>());
 		},
 		[]() {
 			std::clog << "single point spc neighbor offset test\n";
-			assert((wrapped_space<bool, 1/*R*/, 1>::neighbors_offsets(0)) == std::vector<int>());
-			assert((unwrapped_space<bool, 1/*R*/, 1>::neighbors_offsets(0)) == std::vector<int>());
+			assert((wrapped_space<bool, 1/*R*/, 1>::neighbors_offsets(0)) == std::vector<offset_t>());
+			assert((unwrapped_space<bool, 1/*R*/, 1>::neighbors_offsets(0)) == std::vector<offset_t>());
 		},
 		[]() {
 			std::clog << "radius 1 unwrapped offsets test\n";
 			unwrapped_space<bool, 1/*R*/, 5> spc;
-			assert(spc.at(0).neighbors_offsets() == std::vector<int>({ 1 }));
-			assert(spc.at(1).neighbors_offsets() == std::vector<int>({ -1, 1 }));
-			assert(spc.at(4).neighbors_offsets() == std::vector<int>({ -1 }));
+			assert(spc.at(0).neighbors_offsets() == std::vector<offset_t>({ 1 }));
+			assert(spc.at(1).neighbors_offsets() == std::vector<offset_t>({ -1, 1 }));
+			assert(spc.at(4).neighbors_offsets() == std::vector<offset_t>({ -1 }));
 		},
 		[]() {
 			std::clog << "radius 1 wrapped offsets test\n";
 			wrapped_space<bool, 1/*R*/, 5> spc;
-			assert(spc.at(0).neighbors_offsets() == std::vector<int>({ 1, 4 }));
-			assert(spc.at(1).neighbors_offsets() == std::vector<int>({ -1, 1 }));
-			assert(spc.at(4).neighbors_offsets() == std::vector<int>({ -4, -1 }));
+			assert(spc.at(0).neighbors_offsets() == std::vector<offset_t>({ 1, 4 }));
+			assert(spc.at(1).neighbors_offsets() == std::vector<offset_t>({ -1, 1 }));
+			assert(spc.at(4).neighbors_offsets() == std::vector<offset_t>({ -4, -1 }));
 		},
 		[]() {
 			std::clog << "radius 1 offsets in 3D test\n";
 			unwrapped_space<bool, 1/*R*/, 5, 10, 7> spc;
 			auto it = spc.begin();
-			assert(it.neighbors_offsets() == std::vector<int>({ 1, 7, 8, 70, 71, 77, 78 }));
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ 1, 7, 8, 70, 71, 77, 78 }));
 			assert(it.type() == 13);
 			assert(it == 0);
 		},
@@ -177,51 +177,51 @@ namespace sprogar {
 			std::clog << "radius 2 unwrapped offsets test\n";
 			unwrapped_space<bool, 2/*R*/, 40, 7> spc;
 			auto it = spc.begin();
-			assert(it.neighbors_offsets() == std::vector<int>({ 1, 2, 7, 8, 9, 14, 15, 16 }));
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ 1, 2, 7, 8, 9, 14, 15, 16 }));
 		},
 		[]() {
 			std::clog << "radius 2 wrapped offsets test\n";
 			wrapped_space<bool, 2/*R*/, 40, 7> spc;
 			auto it = spc.begin();
-			assert(it.neighbors_offsets() == std::vector<int>({ 1, 2, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16,
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ 1, 2, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16,
 				19, 20, 266, 267, 268, 271, 272, 273, 274, 275, 278, 279 }));
 		},
 		[]() {
 			std::clog << "crosscheck test\n";
 			unwrapped_space<bool, 1/*R*/, 2, 4> uws;
 			auto it = uws.begin();
-			assert(it.neighbors_offsets() == std::vector<int>({ 1, 4, 5 }));
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ 1, 4, 5 }));
 
 			++it; // [0,1]
-			assert(it.neighbors_offsets() == std::vector<int>({ -1, 1, 3, 4, 5 }));
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ -1, 1, 3, 4, 5 }));
 
 			++it; // [0,2]
 			++it; // [0,3]
 			++it; // [1,0]
-			assert(it.neighbors_offsets() == std::vector<int>({ -4, -3, 1 }));
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ -4, -3, 1 }));
 
 			++it; // [1,1]
 			++it; // [1,2]
 			++it; // [1,3]
-			assert(it.neighbors_offsets() == std::vector<int>({ -5, -4, -1 }));
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ -5, -4, -1 }));
 			}, []() {
 			std::clog << "neighbors' offsets 2-D test\n";
 			wrapped_space<bool, 1/*R*/, 2, 4> ws;
 			auto it = ws.begin();
-			assert(it.neighbors_offsets() == std::vector<int>({ 1, 3, 4, 5, 7 }));
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ 1, 3, 4, 5, 7 }));
 
 			++it; // [0,1]
-			assert(it.neighbors_offsets() == std::vector<int>({ -1, 1, 3, 4, 5 }));
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ -1, 1, 3, 4, 5 }));
 
 			++it; // [0,2]
 			++it; // [0,3]
 			++it; // [1,0]
-			assert(it.neighbors_offsets() == std::vector<int>({ -4, -3, -1, 1, 3 }));
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ -4, -3, -1, 1, 3 }));
 
 			++it; // [1,1]
 			++it; // [1,2]
 			++it; // [1,3]
-			assert(it.neighbors_offsets() == std::vector<int>({ -7, -5, -4, -3, -1 }));
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ -7, -5, -4, -3, -1 }));
 		},
 		[]() {
 			std::clog << "initialize location with coordinate list test\n";
@@ -232,27 +232,27 @@ namespace sprogar {
 			std::clog << "neighbors' offsets and neighborhood types 3-D test\n";
 			unwrapped_space<bool, 1/*R*/, 3, 4, 5> uws;
 			auto it = uws.begin(); // [0,0,0]
-			assert(it.neighbors_offsets() == std::vector<int>({ 1, 5, 6, 20, 21, 25, 26 }));
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ 1, 5, 6, 20, 21, 25, 26 }));
 		},
 		[]() {
 			std::clog << "neighbors' offsets and neighborhood types 3-D test\n";
 			wrapped_space<bool, 1/*R*/, 3, 4, 5> ws;
 			auto it = ws.begin(); // [0,0,0]
-			assert(it.neighbors_offsets() == std::vector<int>({ 1, 4, 5, 6, 9, 15, 16, 19, 20, 21,
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ 1, 4, 5, 6, 9, 15, 16, 19, 20, 21,
 			24, 25, 26, 29, 35, 36, 39, 40, 41, 44, 45, 46, 49, 55, 56, 59 }));
 		},
 		[]() {
 			std::clog << "neighbors' offsets of the first point in unwrapped 4-D spc test\n";
 			unwrapped_space<bool, 1/*R*/, 4, 4, 4, 4> spc;
 			auto it = spc.begin();
-			assert(it.neighbors_offsets() == std::vector<int>(
+			assert(it.neighbors_offsets() == std::vector<offset_t>(
 			{ 1, 4, 5, 16, 17, 20, 21, 64, 64 + 1, 64 + 4, 64 + 5, 64 + 16, 64 + 17, 64 + 20, 64 + 21 }));
 		},
 		[]() {
 			std::clog << "neighbors' offsets of the 80th point in unwrapped 4-D spc test\n";
 			unwrapped_space<bool, 1/*R*/, 4, 4, 4, 4> spc;
 			auto it = spc.at(1,1,0,0);
-			auto ans = std::vector<int>({ -64 - 16, -64 - 15, -64 - 12, -64 - 11, -64 + 0, -64 + 1, -64 + 4, -64 + 5,
+			auto ans = std::vector<offset_t>({ -64 - 16, -64 - 15, -64 - 12, -64 - 11, -64 + 0, -64 + 1, -64 + 4, -64 + 5,
 			-64 + 16, -64 + 17, -64 + 20, -64 + 21, -16, -15, -12, -11, +1, +4, +5, +16, +17, +20, +21, 64 - 16,
 			64 - 15, 64 - 12, 64 - 11, 64 + 0, 64 + 1, 64 + 4, 64 + 5, 64 + 16, 64 + 17, 64 + 20, 64 + 21 });
 			assert(it.neighbors_offsets() == ans);
@@ -261,7 +261,7 @@ namespace sprogar {
 			std::clog << "another offsets 3-D test\n";
 			wrapped_space<bool, 1/*R*/, 4, 4, 4> spc;
 			auto it = spc.at(3, 3, 2);
-			assert(it.neighbors_offsets() == std::vector<int>({ -61, -60, -59, -53, -52, -51, -49, -48, -47, -29, -28, -27, -21, -20, -19, -17, -16,
+			assert(it.neighbors_offsets() == std::vector<offset_t>({ -61, -60, -59, -53, -52, -51, -49, -48, -47, -29, -28, -27, -21, -20, -19, -17, -16,
 				-15, -13, -12, -11, -5, -4, -3, -1, +1 }));
 		},
 		[]() {
@@ -269,7 +269,7 @@ namespace sprogar {
 			location_iterator<1/*R*/, 5, 6> it(2,3);
 			assert(3 == it[0]);
 			assert(2 == it[1]);
-			assert(-1 == it[2]);
+			assert((unsigned)-1 == it[2]);
 		},
 		[]() {
 			std::clog << "mapping arbitrary 3-D location to 1-D test\n";
