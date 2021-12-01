@@ -17,6 +17,8 @@
  * along with Hyperspace.  If not, see <http://www.gnu.org/licenses/>.
  *
  * */
+ 
+#include <iostream>
 
 #include "examples/examples.h"
 #include "test/test.h"
@@ -35,4 +37,6 @@ int main()
 
     sprogar::examples::game_of_life_2D();
     sprogar::examples::game_of_life_3D();
+	
+	std::clog << "All tests passed.\n";
 }

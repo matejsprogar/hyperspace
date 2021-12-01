@@ -317,8 +317,9 @@ namespace sprogar {
 		},
 		[]() {
 			std::clog << "spc description test\n";
-			assert((wrapped_space<bool, 1/*R*/, 5, 2, 3, 1>::info()) == "5x2x3x1 wrapped");
-			assert((unwrapped_space<bool, 1/*R*/, 1, 3, 2, 5>::info()) == "1x3x2x5 unwrapped");
+			std::clog << wrapped_space<bool, 1/*R*/, 5, 2, 3, 1>::info() << std::endl;
+			assert((wrapped_space<bool, 1/*R*/, 5, 2, 3, 1>::info()) == "5x2x3x1 wrapped R1");
+			assert((unwrapped_space<bool, 2/*R*/, 1, 3, 2, 5>::info()) == "1x3x2x5 unwrapped R2");
 		},
 		[]() {
 			std::clog << "spc dimension test\n";
