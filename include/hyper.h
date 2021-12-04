@@ -136,7 +136,7 @@ namespace sprogar
 			// construct by coordinates
 			template <typename... CC>
 			location_iterator(typename root::dummy pos, unsigned c, CC... cc)
-				: base(root::dummy(pos.value* X + c), cc...), coordinate(c)
+				: base(typename root::dummy(pos.value* X + c), cc...), coordinate(c)
 			{
 			}
 			// construct by id
@@ -214,7 +214,7 @@ namespace sprogar
 			inline bool equal_coordinates(const OtherIterator& other) const
 			{
 				//assert(sizeof...(XX) == sizeof...(OtherIterator::XX));
-				return coordinate == other.coordinate and base::equal_coordinates((const OtherIterator::base&)other);
+				return coordinate == other.coordinate and base::equal_coordinates((const typename OtherIterator::base&)other);
 			}
 
 			inline operator position_t() const { return root::pos1d; }
@@ -320,7 +320,7 @@ namespace sprogar
 
 		public:
 			static inline constexpr std::string info() {
-				const std::string msg = std::string("wrapped R") + std::to_string(R) + " [";
+				const std::string msg = std::string("wrapped R") + std::to_string(R);
 				return wrap ? msg : std::string("un") + msg;
 			}
 			static inline constexpr unsigned dimension() { return 0; }
@@ -345,7 +345,7 @@ namespace sprogar
 		public:
 			static inline constexpr std::string info()
 			{
-				return iterable_space<wrap, R, XX...>::info() + (sizeof...(XX) > 0 ? "," : "") + std::to_string(X);
+				return std::to_string(X) + (sizeof...(XX) > 0 ? "x" : " ") + iterable_space<wrap, R, XX...>::info();
 			}
 			static inline constexpr unsigned dimension() { return 1 + sizeof...(XX); }
 			static inline constexpr unsigned dimension(unsigned D)
@@ -373,7 +373,7 @@ namespace sprogar
 			for (; loc != loc_end; ++loc) {
 				unsigned typ = loc.type();
 				if (M.find(typ) == M.end())
-					M[typ] = loc.make_offset<wrap>();
+					M[typ] = loc.template make_offset<wrap>();
 			}
 
 			std::vector<std::vector<offset_t>> ret((unsigned)std::pow(2 * R + 1, sizeof...(XX)));
@@ -554,7 +554,7 @@ namespace sprogar
 					data.push_back(f());
 			}
 
-			static inline constexpr std::string info() { return space_offsets::info() + ']'; }
+			static inline constexpr std::string info() { return space_offsets::info(); }
 
 			inline typename std::vector<T>::reference operator[](position_t pos) { return data[pos]; }
 			inline typename std::vector<T>::const_reference operator[](position_t pos) const { return data[pos]; }
