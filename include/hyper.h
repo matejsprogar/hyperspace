@@ -389,13 +389,14 @@ namespace sprogar
 		template <bool wrap, unsigned R, unsigned... XX>
 		class iterable_offsets : public iterable_space<wrap, R, XX...>
 		{
-			static const std::vector<std::vector<offset_t>> all_offsets;
 
 		public:
 			typedef hyper::location_iterator<R, XX...> iterator;
 
 			static inline const std::vector<offset_t>& neighbors_offsets(unsigned hood_type)
 			{
+				static std::vector<std::vector<offset_t>> all_offsets = make_neighborhoods<wrap, R, XX...>();
+
 				assert(hood_type < all_offsets.size());
 				return all_offsets[hood_type];
 			}
@@ -405,14 +406,11 @@ namespace sprogar
 				std::vector<const std::vector<offset_t>*> ofs(base::size());
 
 				for (auto loc = base::begin(); loc != base::end(); ++loc)
-					ofs[(position_t)loc] = &all_offsets[loc.type()];
+					ofs[(position_t)loc] = &neighbors_offsets(loc.type());
 
 				return ofs;
 			}
 		};
-
-		template <bool wrap, unsigned R, unsigned... XX>
-		const std::vector<std::vector<offset_t>> iterable_offsets<wrap, R, XX...>::all_offsets = make_neighborhoods<wrap, R, XX...>();
 
 		template <unsigned R, unsigned... XX>
 		using wrapped_space_offsets = iterable_offsets<true, R, XX...>;
