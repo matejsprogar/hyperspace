@@ -399,6 +399,10 @@ namespace sprogar
 				assert(hood_type < all_offsets.size());
 				return all_offsets[hood_type];
 			}
+			static inline const std::vector<std::vector<offset_t>>& offsets()
+			{
+				return all_offsets;
+			}
 		};
 
 		template <bool wrap, unsigned R, unsigned... XX>
