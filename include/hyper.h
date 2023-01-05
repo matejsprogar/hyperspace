@@ -399,9 +399,15 @@ namespace sprogar
 				assert(hood_type < all_offsets.size());
 				return all_offsets[hood_type];
 			}
-			static inline const std::vector<std::vector<offset_t>>& offsets()
+			static std::vector<const std::vector<offset_t>*> offsets()
 			{
-				return all_offsets;
+				using base = iterable_space<wrap, R, XX...>;
+				std::vector<const std::vector<offset_t>*> ofs(base::size());
+
+				for (auto loc = base::begin(); loc != base::end(); ++loc)
+					ofs[(position_t)loc] = &all_offsets[loc.type()];
+
+				return ofs;
 			}
 		};
 
@@ -557,6 +563,7 @@ namespace sprogar
 				while (data.size() < space_offsets::size())
 					data.push_back(f());
 			}
+
 
 			static inline constexpr std::string info() { return space_offsets::info(); }
 
